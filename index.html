@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GRID to CHIP - Power Delivery for AI Supercomputers</title>
+<meta name="description" content="Interactive visualization of power delivery from electrical grid to GPU chip for NVIDIA AI supercomputer racks.">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#0a0e1a;--bg2:#0d1225;--bg3:#111830;
+--cyan:#00f0ff;--blue:#0066ff;--gold:#ffd700;--magenta:#ff00ff;--green:#00ff88;
+--text:#e0e6f0;--text2:#8892a8;--text3:#4a5268;
+--radius:12px;
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;line-height:1.6;overflow-x:hidden}
+h1,h2,h3,h4{font-weight:700;line-height:1.2}
+a{color:var(--cyan);text-decoration:none}
+section{padding:80px 20px;max-width:1200px;margin:0 auto}
+.section-title{text-align:center;font-size:clamp(1.8rem,4vw,2.8rem);margin-bottom:1rem;background:linear-gradient(135deg,var(--cyan),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.section-sub{text-align:center;color:var(--text2);font-size:1.1rem;max-width:700px;margin:0 auto 3rem}
+
+/* ── HERO ── */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;padding:40px 20px}
+.hero-bg{position:absolute;inset:0;z-index:0}
+.hero-bg canvas{width:100%;height:100%}
+.hero-content{position:relative;z-index:2}
+.hero-title{font-size:clamp(3rem,8vw,6rem);font-weight:900;letter-spacing:-.02em;margin-bottom:.5rem}
+.hero-title .g{color:var(--gold)}
+.hero-title .arrow{display:inline-block;margin:0 .15em;position:relative}
+.hero-title .arrow-text{background:linear-gradient(90deg,var(--gold),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-title .c{color:var(--cyan)}
+.hero-sub{font-size:clamp(1rem,2.5vw,1.4rem);color:var(--text2);max-width:600px;margin:1rem auto 2rem}
+.scroll-hint{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--text3);font-size:.85rem;animation:bobDown 2s ease-in-out infinite}
+.scroll-hint .chevron{width:24px;height:24px;border-right:2px solid var(--text3);border-bottom:2px solid var(--text3);transform:rotate(45deg)}
+@keyframes bobDown{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(10px)}}
+
+/* arc effect between words */
+.arc-container{position:absolute;top:50%;left:0;width:100%;height:60px;pointer-events:none;transform:translateY(-50%)}
+.arc-particle{position:absolute;width:4px;height:4px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan),0 0 20px var(--cyan);opacity:0;will-change:transform,opacity}
+
+/* ── POWER CHAIN ── */
+#power-chain{max-width:1300px}
+.chain-toggle{display:flex;justify-content:center;gap:0;margin-bottom:3rem;background:var(--bg2);border-radius:40px;padding:4px;width:fit-content;margin-left:auto;margin-right:auto;border:1px solid rgba(255,255,255,.06)}
+.chain-toggle button{padding:12px 28px;border:none;border-radius:36px;background:transparent;color:var(--text2);font-size:.95rem;font-weight:600;cursor:pointer;transition:all .3s}
+.chain-toggle button.active{color:#fff}
+.chain-toggle button.active.ac-btn{background:linear-gradient(135deg,var(--blue),var(--cyan));box-shadow:0 0 20px rgba(0,102,255,.3)}
+.chain-toggle button.active.dc-btn{background:linear-gradient(135deg,var(--gold),#ff8800);box-shadow:0 0 20px rgba(255,215,0,.3)}
+
+.chain-wrapper{position:relative;overflow-x:auto;padding:20px 0}
+.chain-stages{display:flex;align-items:stretch;gap:0;justify-content:center;flex-wrap:nowrap;min-width:fit-content;padding:0 10px}
+.chain-stage{background:var(--bg2);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:18px 16px;min-width:150px;max-width:170px;flex-shrink:0;text-align:center;position:relative;transition:all .5s cubic-bezier(.4,0,.2,1);opacity:1;transform:scale(1)}
+.chain-stage.hidden{opacity:0;transform:scale(.7);max-width:0;min-width:0;padding:0;margin:0;border:0;overflow:hidden}
+.chain-stage .stage-num{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;opacity:.5}
+.chain-stage .stage-name{font-size:.85rem;font-weight:700;margin-bottom:8px;min-height:2.4em;display:flex;align-items:center;justify-content:center}
+.chain-stage .stage-voltage{font-size:.75rem;color:var(--text2);margin-bottom:4px}
+.chain-stage .stage-eff{font-size:1.3rem;font-weight:800}
+.chain-stage .stage-loss{font-size:.7rem;color:var(--text3);margin-top:2px}
+.chain-stage::after{content:'';position:absolute;inset:-1px;border-radius:var(--radius);opacity:0;transition:opacity .3s;z-index:-1}
+.chain-stage:hover::after{opacity:1}
+.chain-stage[data-color="red"]{border-color:rgba(255,60,60,.2)}.chain-stage[data-color="red"] .stage-eff{color:#ff4444}.chain-stage[data-color="red"]::after{box-shadow:0 0 25px rgba(255,60,60,.15)}
+.chain-stage[data-color="orange"]{border-color:rgba(255,150,0,.2)}.chain-stage[data-color="orange"] .stage-eff{color:#ff9900}.chain-stage[data-color="orange"]::after{box-shadow:0 0 25px rgba(255,150,0,.15)}
+.chain-stage[data-color="yellow"]{border-color:rgba(255,215,0,.2)}.chain-stage[data-color="yellow"] .stage-eff{color:var(--gold)}.chain-stage[data-color="yellow"]::after{box-shadow:0 0 25px rgba(255,215,0,.15)}
+.chain-stage[data-color="green"]{border-color:rgba(0,255,136,.2)}.chain-stage[data-color="green"] .stage-eff{color:var(--green)}.chain-stage[data-color="green"]::after{box-shadow:0 0 25px rgba(0,255,136,.15)}
+.chain-stage[data-color="cyan"]{border-color:rgba(0,240,255,.2)}.chain-stage[data-color="cyan"] .stage-eff{color:var(--cyan)}.chain-stage[data-color="cyan"]::after{box-shadow:0 0 25px rgba(0,240,255,.15)}
+.chain-stage[data-color="blue"]{border-color:rgba(0,102,255,.2)}.chain-stage[data-color="blue"] .stage-eff{color:var(--blue)}.chain-stage[data-color="blue"]::after{box-shadow:0 0 25px rgba(0,102,255,.15)}
+
+.chain-connector{display:flex;align-items:center;justify-content:center;width:40px;flex-shrink:0;position:relative}
+.chain-connector.hidden{width:0;overflow:hidden;opacity:0}
+.conn-line{width:100%;height:3px;position:relative;overflow:hidden;border-radius:2px}
+.conn-line::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,.08)}
+.conn-line::after{content:'';position:absolute;top:0;left:-50%;width:50%;height:100%;border-radius:2px;animation:flowDot 1.5s linear infinite}
+.chain-connector[data-mode="ac"] .conn-line::after{background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+.chain-connector[data-mode="dc"] .conn-line::after{background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+@keyframes flowDot{0%{left:-50%}100%{left:100%}}
+
+.chain-summary{text-align:center;margin-top:2rem;padding:20px;background:var(--bg2);border-radius:var(--radius);border:1px solid rgba(255,255,255,.06)}
+.chain-summary .label{font-size:.85rem;color:var(--text2);margin-bottom:4px}
+.chain-summary .value{font-size:2rem;font-weight:900}
+.chain-summary.ac-summary .value{color:var(--cyan)}
+.chain-summary.dc-summary .value{color:var(--gold)}
+
+/* ── SYSTEM CARDS ── */
+#systems{max-width:1200px}
+.cards-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px}
+.sys-card{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);padding:28px 24px;position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s}
+.sys-card:hover{transform:translateY(-4px)}
+.sys-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.sys-card.card-blue::before{background:linear-gradient(90deg,var(--blue),var(--cyan))}
+.sys-card.card-blue:hover{box-shadow:0 8px 40px rgba(0,102,255,.15)}
+.sys-card.card-magenta::before{background:linear-gradient(90deg,var(--magenta),#ff66cc)}
+.sys-card.card-magenta:hover{box-shadow:0 8px 40px rgba(255,0,255,.15)}
+.sys-card.card-gold::before{background:linear-gradient(90deg,var(--gold),#ff8800)}
+.sys-card.card-gold:hover{box-shadow:0 8px 40px rgba(255,215,0,.15)}
+.sys-card .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.sys-card h3{font-size:1.3rem}
+.card-blue h3{color:var(--cyan)}
+.card-magenta h3{color:var(--magenta)}
+.card-gold h3{color:var(--gold)}
+.badge{font-size:.65rem;font-weight:700;padding:4px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.08em}
+.badge-ac{background:rgba(0,102,255,.15);color:var(--cyan);border:1px solid rgba(0,240,255,.2)}
+.badge-dc{background:rgba(255,215,0,.1);color:var(--gold);border:1px solid rgba(255,215,0,.25);box-shadow:0 0 12px rgba(255,215,0,.15);animation:glowBadge 2s ease-in-out infinite}
+@keyframes glowBadge{0%,100%{box-shadow:0 0 8px rgba(255,215,0,.1)}50%{box-shadow:0 0 20px rgba(255,215,0,.25)}}
+.coming-tag{font-size:.7rem;color:var(--gold);opacity:.7;margin-top:-12px;margin-bottom:12px}
+.spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.spec-item{background:rgba(255,255,255,.02);border-radius:8px;padding:10px 12px}
+.spec-item .spec-label{font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px}
+.spec-item .spec-val{font-size:1rem;font-weight:700}
+.card-blue .spec-val{color:var(--text)}
+.card-magenta .spec-val{color:var(--text)}
+.card-gold .spec-val{color:var(--text)}
+.spec-item.full{grid-column:1/-1}
+.card-power-flow{height:3px;margin-top:16px;border-radius:2px;position:relative;overflow:hidden}
+.card-power-flow::before{content:'';position:absolute;inset:0;opacity:.15}
+.card-blue .card-power-flow::before{background:var(--blue)}
+.card-magenta .card-power-flow::before{background:var(--magenta)}
+.card-gold .card-power-flow::before{background:var(--gold)}
+.card-power-flow::after{content:'';position:absolute;top:0;left:-30%;width:30%;height:100%;animation:flowDot 2s linear infinite}
+.card-blue .card-power-flow::after{background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+.card-magenta .card-power-flow::after{background:linear-gradient(90deg,transparent,var(--magenta),transparent)}
+.card-gold .card-power-flow::after{background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+
+/* ── EFFICIENCY COMPARISON ── */
+#efficiency{max-width:1100px}
+.eff-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+@media(max-width:768px){.eff-grid{grid-template-columns:1fr}}
+.eff-column h3{font-size:1.2rem;margin-bottom:1.5rem;text-align:center}
+.eff-column.ac-col h3{color:var(--cyan)}
+.eff-column.dc-col h3{color:var(--gold)}
+.eff-bar-group{margin-bottom:16px}
+.eff-bar-label{display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:4px}
+.eff-bar-label span:first-child{color:var(--text2)}
+.eff-bar-label span:last-child{font-weight:700}
+.eff-bar-track{height:28px;background:rgba(255,255,255,.04);border-radius:6px;overflow:hidden;position:relative}
+.eff-bar-fill{height:100%;border-radius:6px;width:0;transition:width 1.2s cubic-bezier(.4,0,.2,1);position:relative;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:.7rem;font-weight:700;color:rgba(255,255,255,.8)}
+.ac-col .eff-bar-fill{background:linear-gradient(90deg,rgba(0,102,255,.6),rgba(0,240,255,.8))}
+.dc-col .eff-bar-fill{background:linear-gradient(90deg,rgba(255,180,0,.6),rgba(255,215,0,.8))}
+.eff-cumulative{margin-top:24px;padding:16px;background:var(--bg3);border-radius:var(--radius);text-align:center}
+.eff-cumulative .cum-label{font-size:.85rem;color:var(--text2)}
+.eff-cumulative .cum-val{font-size:2.2rem;font-weight:900}
+.ac-col .cum-val{color:var(--cyan)}
+.dc-col .cum-val{color:var(--gold)}
+.eff-improvement{text-align:center;margin-top:2rem;padding:20px;background:linear-gradient(135deg,rgba(0,255,136,.05),rgba(0,240,255,.05));border:1px solid rgba(0,255,136,.15);border-radius:var(--radius)}
+.eff-improvement .imp-val{font-size:2rem;font-weight:900;color:var(--green)}
+
+/* ── UNIT CONVERTER ── */
+.unit-panel{position:fixed;bottom:20px;right:20px;z-index:100;background:var(--bg2);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);padding:0;box-shadow:0 8px 32px rgba(0,0,0,.5);transition:all .3s;max-width:280px}
+.unit-panel.collapsed .unit-panel-body{display:none}
+.unit-panel-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;user-select:none;border-bottom:1px solid rgba(255,255,255,.06)}
+.unit-panel-header h4{font-size:.85rem;color:var(--cyan)}
+.unit-panel-header .toggle-icon{font-size:1.2rem;color:var(--text3);transition:transform .3s}
+.unit-panel.collapsed .toggle-icon{transform:rotate(180deg)}
+.unit-panel-body{padding:12px 16px 16px}
+.unit-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.unit-row:last-child{margin-bottom:0}
+.unit-row label{font-size:.8rem;color:var(--text2)}
+.unit-row select{background:var(--bg3);border:1px solid rgba(255,255,255,.1);border-radius:6px;color:var(--text);padding:4px 8px;font-size:.8rem;cursor:pointer}
+.unit-row select:focus{outline:none;border-color:var(--cyan)}
+
+/* ── FOOTER ── */
+footer{text-align:center;padding:40px 20px;border-top:1px solid rgba(255,255,255,.06);color:var(--text3);font-size:.85rem}
+footer .sources{margin-bottom:8px;color:var(--text2)}
+
+/* ── SCROLL ANIMATIONS ── */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .8s,transform .8s}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .chain-stages{flex-wrap:wrap;justify-content:center;gap:8px}
+  .chain-connector{width:24px}
+  .chain-stage{min-width:130px;max-width:150px}
+  .cards-row{grid-template-columns:1fr}
+  section{padding:60px 16px}
+}
+@media(max-width:600px){
+  .chain-stages{flex-direction:column;align-items:center}
+  .chain-connector{width:3px;height:30px;flex-direction:column}
+  .conn-line{width:3px!important;height:100%!important}
+  .conn-line::after{width:100%!important;height:50%!important;left:0!important;top:-50%!important;animation-name:flowDotV!important}
+  @keyframes flowDotV{0%{top:-50%}100%{top:100%}}
+  .chain-stage{max-width:90%;min-width:200px}
+  .spec-grid{grid-template-columns:1fr}
+  .unit-panel{right:10px;bottom:10px;max-width:260px}
+}
+/* ── Hero grid canvas background ── */
+.hero-grid{position:absolute;inset:0;opacity:.12}
+</style>
+</head>
+<body>
+
+<!-- ════════ HERO ════════ -->
+<section class="hero" id="hero">
+  <div class="hero-bg"><canvas class="hero-grid" id="heroCanvas"></canvas></div>
+  <div class="hero-content">
+    <h1 class="hero-title">
+      <span class="g">GRID</span><span class="arrow"><span class="arrow-text"> → </span></span><span class="c">CHIP</span>
+    </h1>
+    <p class="hero-sub">Power Delivery for Next-Generation NVIDIA AI Supercomputers</p>
+    <a href="#power-chain" style="display:inline-block;padding:12px 32px;border:1px solid var(--cyan);border-radius:30px;color:var(--cyan);font-weight:600;font-size:.95rem;transition:all .3s;background:rgba(0,240,255,.05)">Explore the Chain</a>
+  </div>
+  <div class="scroll-hint" aria-hidden="true"><span>Scroll</span><div class="chevron"></div></div>
+</section>
+
+<!-- ════════ POWER CHAIN ════════ -->
+<section id="power-chain">
+  <h2 class="section-title reveal">Power Delivery Chain</h2>
+  <p class="section-sub reveal">From high-voltage transmission lines to sub-1V GPU cores, trace every conversion stage and its efficiency cost.</p>
+
+  <div class="chain-toggle reveal">
+    <button class="ac-btn active" onclick="setChainMode('ac')">Traditional 480V AC</button>
+    <button class="dc-btn" onclick="setChainMode('dc')">800V DC (Vera Rubin)</button>
+  </div>
+
+  <div class="chain-wrapper reveal">
+    <div class="chain-stages" id="chainStages"></div>
+  </div>
+  <div class="chain-summary ac-summary reveal" id="chainSummary">
+    <div class="label">Overall Grid-to-Chip Efficiency</div>
+    <div class="value" id="chainEffValue">~80-86%</div>
+  </div>
+</section>
+
+<!-- ════════ SYSTEM CARDS ════════ -->
+<section id="systems">
+  <h2 class="section-title reveal">The Racks</h2>
+  <p class="section-sub reveal">Three generations of NVIDIA NVLink-domain AI supercomputer racks, each pushing the boundaries of power density.</p>
+
+  <div class="cards-row">
+    <!-- GB200 -->
+    <article class="sys-card card-blue reveal">
+      <div class="card-header">
+        <h3>GB200 NVL72</h3>
+        <span class="badge badge-ac">480V AC</span>
+      </div>
+      <div class="spec-grid">
+        <div class="spec-item"><div class="spec-label">GPUs</div><div class="spec-val">72x B200</div></div>
+        <div class="spec-item"><div class="spec-label">GPU TDP</div><div class="spec-val"><span data-value="1200" data-unit="W">1,200 W</span></div></div>
+        <div class="spec-item"><div class="spec-label">CPUs</div><div class="spec-val">36x Grace</div></div>
+        <div class="spec-item"><div class="spec-label">CPU TDP</div><div class="spec-val"><span data-value="250" data-unit="W">~250 W</span></div></div>
+        <div class="spec-item"><div class="spec-label">Rack Power</div><div class="spec-val"><span data-value="120000" data-unit="W">~120 kW</span></div></div>
+        <div class="spec-item"><div class="spec-label">Compute Trays</div><div class="spec-val">18</div></div>
+        <div class="spec-item"><div class="spec-label">Input Voltage</div><div class="spec-val"><span data-value="480" data-unit="V">480 V</span> 3-phase AC</div></div>
+        <div class="spec-item"><div class="spec-label">DC Bus</div><div class="spec-val"><span data-value="50" data-unit="V">~50 V</span> DC</div></div>
+        <div class="spec-item full"><div class="spec-label">Power Shelves</div><div class="spec-val">8 shelves (4+4 N+N), 6x 5.5 kW PSUs each</div></div>
+        <div class="spec-item full"><div class="spec-label">Cooling</div><div class="spec-val">Liquid-cooled compute, air-cooled power shelves</div></div>
+      </div>
+      <div class="card-power-flow"></div>
+    </article>
+
+    <!-- GB300 -->
+    <article class="sys-card card-magenta reveal">
+      <div class="card-header">
+        <h3>GB300 NVL72</h3>
+        <span class="badge badge-ac">480V AC</span>
+      </div>
+      <div class="spec-grid">
+        <div class="spec-item"><div class="spec-label">GPUs</div><div class="spec-val">72x B300</div></div>
+        <div class="spec-item"><div class="spec-label">GPU TDP</div><div class="spec-val"><span data-value="1400" data-unit="W">1,400 W</span></div></div>
+        <div class="spec-item"><div class="spec-label">CPUs</div><div class="spec-val">36x Grace</div></div>
+        <div class="spec-item"><div class="spec-label">CPU TDP</div><div class="spec-val"><span data-value="250" data-unit="W">~250 W</span></div></div>
+        <div class="spec-item"><div class="spec-label">Rack Power</div><div class="spec-val"><span data-value="135000" data-unit="W">~135 kW</span></div></div>
+        <div class="spec-item"><div class="spec-label">FP4 / GPU</div><div class="spec-val">15 PFLOPS</div></div>
+        <div class="spec-item"><div class="spec-label">HBM3e / GPU</div><div class="spec-val">288 GB</div></div>
+        <div class="spec-item"><div class="spec-label">DC Bus</div><div class="spec-val"><span data-value="50" data-unit="V">~50 V</span> DC</div></div>
+        <div class="spec-item full"><div class="spec-label">Input</div><div class="spec-val"><span data-value="480" data-unit="V">480 V</span> 3-phase AC &mdash; same rack architecture as GB200, ~50V DC bus</div></div>
+      </div>
+      <div class="card-power-flow"></div>
+    </article>
+
+    <!-- Vera Rubin -->
+    <article class="sys-card card-gold reveal">
+      <div class="card-header">
+        <h3>Vera Rubin NVL72</h3>
+        <span class="badge badge-dc">800V DC</span>
+      </div>
+      <p class="coming-tag">Expected Late 2026 &ndash; 2027</p>
+      <div class="spec-grid">
+        <div class="spec-item"><div class="spec-label">GPUs</div><div class="spec-val">72x R200</div></div>
+        <div class="spec-item"><div class="spec-label">GPU TDP</div><div class="spec-val"><span data-value="2050" data-unit="W">1,800-2,300 W</span></div></div>
+        <div class="spec-item"><div class="spec-label">Rack Power</div><div class="spec-val"><span data-value="200000" data-unit="W">~180-220 kW</span></div></div>
+        <div class="spec-item"><div class="spec-label">FP4 / GPU</div><div class="spec-val">50 PFLOPS (inference)</div></div>
+        <div class="spec-item"><div class="spec-label">HBM4 / GPU</div><div class="spec-val">288 GB</div></div>
+        <div class="spec-item"><div class="spec-label">Bandwidth</div><div class="spec-val">22 TB/s</div></div>
+        <div class="spec-item"><div class="spec-label">NVLink 6</div><div class="spec-val">3.6 TB/s / GPU</div></div>
+        <div class="spec-item"><div class="spec-label">DC Bus</div><div class="spec-val"><span data-value="800" data-unit="V">800 V</span> &rarr; <span data-value="50" data-unit="V">50 V</span> DC</div></div>
+        <div class="spec-item full"><div class="spec-label">Efficiency Gains</div><div class="spec-val">45% less copper, up to 70% less maintenance</div></div>
+      </div>
+      <div class="card-power-flow"></div>
+    </article>
+  </div>
+</section>
+
+<!-- ════════ EFFICIENCY COMPARISON ════════ -->
+<section id="efficiency">
+  <h2 class="section-title reveal">Efficiency Comparison</h2>
+  <p class="section-sub reveal">How 800V DC distribution eliminates conversion stages and reduces cumulative power loss.</p>
+
+  <div class="eff-grid reveal" id="effGrid">
+    <div class="eff-column ac-col">
+      <h3>Traditional 480V AC Path</h3>
+      <div id="acBars"></div>
+      <div class="eff-cumulative"><div class="cum-label">Cumulative Efficiency</div><div class="cum-val">~83%</div></div>
+    </div>
+    <div class="eff-column dc-col">
+      <h3>800V DC Path</h3>
+      <div id="dcBars"></div>
+      <div class="eff-cumulative"><div class="cum-label">Cumulative Efficiency</div><div class="cum-val">~87%</div></div>
+    </div>
+  </div>
+  <div class="eff-improvement reveal">
+    <div class="cum-label" style="color:var(--text2);margin-bottom:4px">Efficiency Improvement with 800V DC</div>
+    <div class="imp-val">~5 percentage points</div>
+    <div style="color:var(--text2);font-size:.9rem;margin-top:4px">Fewer conversion stages = less waste heat, lower cooling costs, smaller copper footprint</div>
+  </div>
+</section>
+
+<!-- ════════ FOOTER ════════ -->
+<footer>
+  <div class="sources">Data sourced from NVIDIA, OCP, IEEE</div>
+  <div>Last updated: April 14, 2026</div>
+</footer>
+
+<!-- ════════ UNIT CONVERTER PANEL ════════ -->
+<div class="unit-panel" id="unitPanel">
+  <div class="unit-panel-header" onclick="toggleUnitPanel()">
+    <h4>Unit Converter</h4>
+    <span class="toggle-icon">&#9660;</span>
+  </div>
+  <div class="unit-panel-body">
+    <div class="unit-row"><label>Power</label><select id="unitPower" onchange="convertUnits()"><option value="W">W</option><option value="kW" selected>kW</option><option value="MW">MW</option></select></div>
+    <div class="unit-row"><label>Voltage</label><select id="unitVoltage" onchange="convertUnits()"><option value="V" selected>V</option><option value="kV">kV</option></select></div>
+    <div class="unit-row"><label>Current</label><select id="unitCurrent" onchange="convertUnits()"><option value="A" selected>A</option><option value="kA">kA</option></select></div>
+    <div class="unit-row"><label>Temp</label><select id="unitTemp" onchange="convertUnits()"><option value="C" selected>&deg;C</option><option value="F">&deg;F</option></select></div>
+  </div>
+</div>
+
+<script>
+/* ── DATA ── */
+const acStages=[
+  {name:"Grid Transmission",vIn:"138-765 kV",vOut:"138-765 kV",eff:99.5,color:"red",mode:"ac"},
+  {name:"Utility Substation",vIn:"138-765 kV",vOut:"13.8-34.5 kV",eff:98.5,color:"orange",mode:"ac"},
+  {name:"Facility Transformer",vIn:"13.8-34.5 kV",vOut:"480 V",eff:98.5,color:"yellow",mode:"ac"},
+  {name:"UPS (Double Conv.)",vIn:"480 V",vOut:"480 V",eff:96.5,color:"yellow",mode:"ac"},
+  {name:"Bus Bars",vIn:"480 V AC",vOut:"480 V AC",eff:99.5,color:"green",mode:"ac"},
+  {name:"Power Shelves (AC\u2192DC)",vIn:"480 V AC",vOut:"~50 V DC",eff:97.5,color:"cyan",mode:"ac"},
+  {name:"VRM (Point-of-Load)",vIn:"~50 V",vOut:"<1 V",eff:90.5,color:"blue",mode:"ac"}
+];
+const dcStages=[
+  {name:"Grid Transmission",vIn:"138-765 kV",vOut:"138-765 kV",eff:99.5,color:"red",mode:"dc"},
+  {name:"Utility Substation",vIn:"138-765 kV",vOut:"13.8-34.5 kV",eff:98.5,color:"orange",mode:"dc"},
+  {name:"Central Rectifier",vIn:"13.8 kV AC",vOut:"800 V DC",eff:97.5,color:"yellow",mode:"dc"},
+  {name:"800V DC Bus",vIn:"800 V DC",vOut:"800 V DC",eff:99.5,color:"green",mode:"dc"},
+  {name:"Rack DC-DC Conv.",vIn:"800 V DC",vOut:"50 V DC",eff:97.5,color:"cyan",mode:"dc"},
+  {name:"VRM (Point-of-Load)",vIn:"50 V",vOut:"<1 V",eff:90.5,color:"blue",mode:"dc"}
+];
+const acEffBars=[
+  {label:"Grid Transmission",val:99.5},{label:"Utility Substation",val:98.5},{label:"Facility Transformer",val:98.5},
+  {label:"UPS",val:96.5},{label:"Bus Bars",val:99.5},{label:"Power Shelves (AC\u2192DC)",val:97.5},{label:"VRM",val:90.5}
+];
+const dcEffBars=[
+  {label:"Grid Transmission",val:99.5},{label:"Utility Substation",val:98.5},{label:"Central Rectifier",val:97.5},
+  {label:"800V DC Bus",val:99.5},{label:"Rack DC-DC",val:97.5},{label:"VRM",val:90.5}
+];
+
+let currentMode='ac';
+
+/* ── CHAIN RENDERING ── */
+function renderChain(mode){
+  const stages=mode==='ac'?acStages:dcStages;
+  const container=document.getElementById('chainStages');
+  container.innerHTML='';
+  stages.forEach((s,i)=>{
+    if(i>0){
+      const conn=document.createElement('div');
+      conn.className='chain-connector';
+      conn.setAttribute('data-mode',mode);
+      conn.innerHTML='<div class="conn-line"></div>';
+      container.appendChild(conn);
+    }
+    const el=document.createElement('div');
+    el.className='chain-stage';
+    el.setAttribute('data-color',s.color);
+    const loss=(100-s.eff).toFixed(1);
+    el.innerHTML=`<div class="stage-num">Stage ${i+1}</div><div class="stage-name">${s.name}</div><div class="stage-voltage">${s.vIn} &rarr; ${s.vOut}</div><div class="stage-eff">${s.eff}%</div><div class="stage-loss">${loss}% loss</div>`;
+    el.style.animation=`fadeStageIn .5s ${i*.08}s both`;
+    container.appendChild(el);
+  });
+  // summary
+  const cum=stages.reduce((a,s)=>a*(s.eff/100),1)*100;
+  const summary=document.getElementById('chainSummary');
+  summary.className='chain-summary reveal visible '+(mode==='ac'?'ac-summary':'dc-summary');
+  document.getElementById('chainEffValue').textContent=mode==='ac'?'~80-86% (mid ~83%)':'~85-89% (mid ~87%)';
+}
+
+function setChainMode(mode){
+  currentMode=mode;
+  document.querySelectorAll('.chain-toggle button').forEach(b=>b.classList.remove('active'));
+  document.querySelector(mode==='ac'?'.ac-btn':'.dc-btn').classList.add('active');
+  renderChain(mode);
+}
+
+/* ── EFFICIENCY BARS ── */
+function renderEffBars(){
+  const acC=document.getElementById('acBars');
+  const dcC=document.getElementById('dcBars');
+  acC.innerHTML='';dcC.innerHTML='';
+  acEffBars.forEach(b=>{
+    acC.innerHTML+=`<div class="eff-bar-group"><div class="eff-bar-label"><span>${b.label}</span><span>${b.val}%</span></div><div class="eff-bar-track"><div class="eff-bar-fill" data-width="${b.val}"></div></div></div>`;
+  });
+  dcEffBars.forEach(b=>{
+    dcC.innerHTML+=`<div class="eff-bar-group"><div class="eff-bar-label"><span>${b.label}</span><span>${b.val}%</span></div><div class="eff-bar-track"><div class="eff-bar-fill" data-width="${b.val}"></div></div></div>`;
+  });
+}
+
+/* ── SCROLL ANIMATIONS ── */
+function initObserver(){
+  const obs=new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add('visible');
+        // animate bars
+        e.target.querySelectorAll('.eff-bar-fill').forEach(bar=>{
+          bar.style.width=bar.dataset.width+'%';
+        });
+      }
+    });
+  },{threshold:.15});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+}
+
+/* ── UNIT CONVERTER ── */
+function toggleUnitPanel(){
+  document.getElementById('unitPanel').classList.toggle('collapsed');
+}
+function convertUnits(){
+  const pu=document.getElementById('unitPower').value;
+  const vu=document.getElementById('unitVoltage').value;
+  document.querySelectorAll('[data-value][data-unit]').forEach(el=>{
+    const base=parseFloat(el.dataset.value);
+    const unit=el.dataset.unit;
+    let val=base,suffix=unit;
+    if(unit==='W'){
+      if(pu==='kW'){val=base/1000;suffix='kW'}
+      else if(pu==='MW'){val=base/1e6;suffix='MW'}
+      else{suffix='W'}
+    }else if(unit==='V'){
+      if(vu==='kV'){val=base/1000;suffix='kV'}
+      else{suffix='V'}
+    }else if(unit==='A'){
+      const cu=document.getElementById('unitCurrent').value;
+      if(cu==='kA'){val=base/1000;suffix='kA'}
+    }else if(unit==='C'){
+      const tu=document.getElementById('unitTemp').value;
+      if(tu==='F'){val=base*9/5+32;suffix='\u00b0F'}else{suffix='\u00b0C'}
+    }
+    // format
+    let display;
+    if(val>=1000)display=val.toLocaleString('en-US',{maximumFractionDigits:1});
+    else if(val<0.01)display=val.toFixed(4);
+    else if(val<1)display=val.toFixed(2);
+    else display=val.toLocaleString('en-US',{maximumFractionDigits:1});
+    // keep preceding ~ if exists
+    const prev=el.textContent;
+    const tilde=prev.startsWith('~')?'~':'';
+    el.textContent=tilde+display+' '+suffix;
+  });
+}
+
+/* ── HERO CANVAS (grid + particles) ── */
+function initHeroCanvas(){
+  const canvas=document.getElementById('heroCanvas');
+  const ctx=canvas.getContext('2d');
+  let w,h;
+  function resize(){w=canvas.width=canvas.offsetWidth;h=canvas.height=canvas.offsetHeight}
+  resize();window.addEventListener('resize',resize);
+  const particles=[];
+  for(let i=0;i<60;i++){
+    particles.push({x:Math.random()*2000,y:Math.random()*1200,vx:(Math.random()-.5)*.5,vy:(Math.random()-.5)*.5,r:Math.random()*2+1,a:Math.random()*.5+.2});
+  }
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    // grid lines
+    ctx.strokeStyle='rgba(0,240,255,0.06)';
+    ctx.lineWidth=1;
+    const sp=60;
+    for(let x=0;x<w;x+=sp){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}
+    for(let y=0;y<h;y+=sp){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
+    // particles
+    particles.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0)p.x=w;if(p.x>w)p.x=0;
+      if(p.y<0)p.y=h;if(p.y>h)p.y=0;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(0,240,255,${p.a})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+/* ── Stage fade-in keyframes (injected) ── */
+(function(){
+  const s=document.createElement('style');
+  s.textContent=`@keyframes fadeStageIn{from{opacity:0;transform:translateY(20px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}`;
+  document.head.appendChild(s);
+})();
+
+/* ── INIT ── */
+document.addEventListener('DOMContentLoaded',()=>{
+  renderChain('ac');
+  renderEffBars();
+  initObserver();
+  initHeroCanvas();
+});
+</script>
+</body>
+</html>

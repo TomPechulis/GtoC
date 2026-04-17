@@ -194,17 +194,17 @@ footer .sources{margin-bottom:6px;color:var(--text2)}
 <!-- ════════ TRANSITION ════════ -->
 <section class="transition-section">
   <div class="section-intro reveal">
-    <h2>From 480V AC to 800V DC</h2>
-    <p>Today's NVL72 racks take power through a long chain of AC conversions before it reaches the GPU. Vera Rubin collapses that chain with a single AC&rarr;800V DC conversion at the facility boundary &mdash; fewer stages, less waste heat, 45% less copper.</p>
+    <h2>From 415 V AC to 800 V DC</h2>
+    <p>Following NVIDIA's 800 VDC architecture: today's NVL72 racks take power through a long chain of AC conversions &mdash; 13.8 kV to 415 V transformer, UPS, busway distribution, rack PSUs &mdash; before the chip sees 12 V. Vera Rubin collapses Transformer + UPS + Rack AC&rarr;DC into a single medium-voltage rectifier that delivers 800 V DC straight to the rack.</p>
   </div>
 
   <!-- Today (AC) -->
   <div class="path ac-path reveal">
     <div class="path-header">
       <div class="path-title">
-        <span class="path-era">Today &mdash; 480V AC</span>
+        <span class="path-era">Today &mdash; 415 V AC</span>
         <h3>Multi-stage AC distribution</h3>
-        <span class="path-rack-tag">Used by <strong>GB200 NVL72</strong> &amp; <strong>GB300 NVL72</strong></span>
+        <span class="path-rack-tag">Used by <strong>GB200 NVL72</strong> &amp; <strong>GB300 NVL72</strong> (480 V in US)</span>
       </div>
       <div class="path-meta">
         <div class="path-meta-item">
@@ -228,7 +228,7 @@ footer .sources{margin-bottom:6px;color:var(--text2)}
       <div class="path-title">
         <span class="path-era">Future &mdash; 800V DC</span>
         <h3>Single-conversion DC distribution</h3>
-        <span class="path-rack-tag">Coming with <strong>Vera Rubin NVL72</strong></span>
+        <span class="path-rack-tag">Coming with <strong>Vera Rubin NVL144</strong></span>
       </div>
       <div class="path-meta">
         <div class="path-meta-item">
@@ -247,18 +247,18 @@ footer .sources{margin-bottom:6px;color:var(--text2)}
   <!-- Eff strip -->
   <div class="eff-strip reveal">
     <div class="es-box ac">
-      <div class="es-label">Today (480V AC)</div>
+      <div class="es-label">Today (415 V AC)</div>
       <div class="es-val">~83%</div>
-      <div class="es-sub">7 conversions &middot; more copper, more heat</div>
+      <div class="es-sub">7 stages &middot; Transformer + UPS + AC busways + Rack PSU AC&rarr;DC</div>
     </div>
     <div class="es-arrow">
       <span>&rarr;</span>
       <span class="es-delta">+4-5 pts</span>
     </div>
     <div class="es-box dc">
-      <div class="es-label">Future (800V DC)</div>
+      <div class="es-label">Future (800 V DC)</div>
       <div class="es-val">~87%</div>
-      <div class="es-sub">6 conversions &middot; 45% less copper</div>
+      <div class="es-sub">6 stages &middot; single MV rectifier, direct DC busways, in-rack DC-DC</div>
     </div>
   </div>
 </section>
@@ -271,17 +271,19 @@ footer .sources{margin-bottom:6px;color:var(--text2)}
     <article class="sys-card card-blue reveal">
       <div class="card-header">
         <h3>GB200 NVL72</h3>
-        <span class="badge badge-ac">480V AC</span>
+        <span class="badge badge-ac">415/480 V AC</span>
       </div>
       <div class="spec-grid">
-        <div class="spec-item"><div class="spec-label">GPUs</div><div class="spec-val">72x B200</div></div>
-        <div class="spec-item"><div class="spec-label">GPU TDP</div><div class="spec-val">1,200 W</div></div>
+        <div class="spec-item"><div class="spec-label">GPUs</div><div class="spec-val">72x B200 (Blackwell)</div></div>
         <div class="spec-item"><div class="spec-label">CPUs</div><div class="spec-val">36x Grace</div></div>
-        <div class="spec-item"><div class="spec-label">CPU TDP</div><div class="spec-val">~250 W</div></div>
+        <div class="spec-item"><div class="spec-label">GPU TDP</div><div class="spec-val">1,200 W</div></div>
         <div class="spec-item"><div class="spec-label">Rack Power</div><div class="spec-val">~120 kW</div></div>
-        <div class="spec-item"><div class="spec-label">DC Bus</div><div class="spec-val">~50 V DC</div></div>
-        <div class="spec-item full"><div class="spec-label">Power Shelves</div><div class="spec-val">8 shelves (4+4 N+N), 6x 5.5 kW PSUs each</div></div>
-        <div class="spec-item full"><div class="spec-label">Cooling</div><div class="spec-val">Liquid-cooled compute, air-cooled power shelves</div></div>
+        <div class="spec-item"><div class="spec-label">FP4 / GPU</div><div class="spec-val">20 PFLOPS (sparse)</div></div>
+        <div class="spec-item"><div class="spec-label">HBM / GPU</div><div class="spec-val">192 GB HBM3e</div></div>
+        <div class="spec-item"><div class="spec-label">HBM BW / GPU</div><div class="spec-val">8 TB/s</div></div>
+        <div class="spec-item"><div class="spec-label">NVLink / GPU</div><div class="spec-val">1.8 TB/s (Gen 5)</div></div>
+        <div class="spec-item full"><div class="spec-label">Power Input</div><div class="spec-val">415/480 V AC &rarr; 54 / 12 V DC at tray (8 OCP ORv3 HPR shelves, 4+4 N+N)</div></div>
+        <div class="spec-item full"><div class="spec-label">Cooling</div><div class="spec-val">Liquid-cooled compute trays, air-cooled power shelves</div></div>
       </div>
     </article>
 
@@ -289,37 +291,40 @@ footer .sources{margin-bottom:6px;color:var(--text2)}
     <article class="sys-card card-magenta reveal">
       <div class="card-header">
         <h3>GB300 NVL72</h3>
-        <span class="badge badge-ac">480V AC</span>
+        <span class="badge badge-ac">415/480 V AC</span>
       </div>
       <div class="spec-grid">
-        <div class="spec-item"><div class="spec-label">GPUs</div><div class="spec-val">72x B300</div></div>
-        <div class="spec-item"><div class="spec-label">GPU TDP</div><div class="spec-val">1,400 W</div></div>
+        <div class="spec-item"><div class="spec-label">GPUs</div><div class="spec-val">72x B300 (Blackwell Ultra)</div></div>
         <div class="spec-item"><div class="spec-label">CPUs</div><div class="spec-val">36x Grace</div></div>
-        <div class="spec-item"><div class="spec-label">CPU TDP</div><div class="spec-val">~250 W</div></div>
-        <div class="spec-item"><div class="spec-label">Rack Power</div><div class="spec-val">~135 kW</div></div>
-        <div class="spec-item"><div class="spec-label">FP4 / GPU</div><div class="spec-val">15 PFLOPS</div></div>
-        <div class="spec-item"><div class="spec-label">HBM3e / GPU</div><div class="spec-val">288 GB</div></div>
-        <div class="spec-item"><div class="spec-label">DC Bus</div><div class="spec-val">~50 V DC</div></div>
+        <div class="spec-item"><div class="spec-label">GPU TDP</div><div class="spec-val">1,400 W</div></div>
+        <div class="spec-item"><div class="spec-label">Rack Power</div><div class="spec-val">~135 kW (up to 155 kW peak)</div></div>
+        <div class="spec-item"><div class="spec-label">FP4 / GPU</div><div class="spec-val">30 PFLOPS (sparse)</div></div>
+        <div class="spec-item"><div class="spec-label">HBM / GPU</div><div class="spec-val">288 GB HBM3e</div></div>
+        <div class="spec-item"><div class="spec-label">HBM BW / GPU</div><div class="spec-val">8 TB/s</div></div>
+        <div class="spec-item"><div class="spec-label">NVLink / GPU</div><div class="spec-val">1.8 TB/s (Gen 5)</div></div>
+        <div class="spec-item full"><div class="spec-label">Power Input</div><div class="spec-val">415/480 V AC &rarr; 54 / 12 V DC at tray</div></div>
+        <div class="spec-item full"><div class="spec-label">Cooling</div><div class="spec-val">Fully liquid-cooled (compute + power shelves)</div></div>
       </div>
     </article>
 
-    <!-- Vera Rubin -->
+    <!-- Vera Rubin NVL144 -->
     <article class="sys-card card-gold reveal">
       <div class="card-header">
-        <h3>Vera Rubin NVL72</h3>
-        <span class="badge badge-dc">800V DC</span>
+        <h3>Vera Rubin NVL144</h3>
+        <span class="badge badge-dc">800 V DC</span>
       </div>
-      <p class="coming-tag">Expected Late 2026 &ndash; 2027</p>
+      <p class="coming-tag">Expected late 2026</p>
       <div class="spec-grid">
-        <div class="spec-item"><div class="spec-label">GPUs</div><div class="spec-val">72x R200</div></div>
-        <div class="spec-item"><div class="spec-label">GPU TDP</div><div class="spec-val">1,800-2,300 W</div></div>
-        <div class="spec-item"><div class="spec-label">Rack Power</div><div class="spec-val">~180-220 kW</div></div>
-        <div class="spec-item"><div class="spec-label">FP4 / GPU</div><div class="spec-val">50 PFLOPS (inference)</div></div>
-        <div class="spec-item"><div class="spec-label">HBM4 / GPU</div><div class="spec-val">288 GB</div></div>
-        <div class="spec-item"><div class="spec-label">Bandwidth</div><div class="spec-val">22 TB/s</div></div>
-        <div class="spec-item"><div class="spec-label">NVLink 6</div><div class="spec-val">3.6 TB/s / GPU</div></div>
-        <div class="spec-item"><div class="spec-label">DC Input</div><div class="spec-val">800 V &rarr; 50 V DC</div></div>
-        <div class="spec-item full"><div class="spec-label">Efficiency Gains</div><div class="spec-val">45% less copper, up to 70% less maintenance</div></div>
+        <div class="spec-item"><div class="spec-label">GPUs</div><div class="spec-val">144x Rubin (R200)</div></div>
+        <div class="spec-item"><div class="spec-label">CPUs</div><div class="spec-val">36x Vera</div></div>
+        <div class="spec-item"><div class="spec-label">GPU TDP</div><div class="spec-val">~1,800 W (est.)</div></div>
+        <div class="spec-item"><div class="spec-label">Rack Power</div><div class="spec-val">~180-220 kW (est.)</div></div>
+        <div class="spec-item"><div class="spec-label">FP4 / GPU</div><div class="spec-val">50 PFLOPS (NVFP4)</div></div>
+        <div class="spec-item"><div class="spec-label">HBM / GPU</div><div class="spec-val">288 GB HBM4</div></div>
+        <div class="spec-item"><div class="spec-label">HBM BW / GPU</div><div class="spec-val">~13 TB/s</div></div>
+        <div class="spec-item"><div class="spec-label">NVLink / GPU</div><div class="spec-val">3.6 TB/s (Gen 6)</div></div>
+        <div class="spec-item full"><div class="spec-label">Power Input</div><div class="spec-val">800 V DC &rarr; 54 / 12 V DC at tray (in-rack DC-DC, no AC&rarr;DC stage)</div></div>
+        <div class="spec-item full"><div class="spec-label">Cooling</div><div class="spec-val">Fully liquid-cooled</div></div>
       </div>
     </article>
   </div>
@@ -335,34 +340,34 @@ footer .sources{margin-bottom:6px;color:var(--text2)}
 /* ── STAGE DATA ── */
 const acStages=[
   {name:"Grid Transmission",voltage:"138-765 kV AC",icon:"\u26A1",color:"red",eff:99.5,
-   desc:"High-voltage AC transmission lines carry electricity from power plants across hundreds of miles. Higher voltages minimize I\u00B2R losses."},
-  {name:"Utility Substation",voltage:"765 kV \u2192 13.8 kV",icon:"\uD83C\uDFED",color:"orange",eff:98.5,
-   desc:"Step-down transformers reduce transmission voltage to medium-voltage distribution for delivery to the facility."},
-  {name:"Facility Transformer",voltage:"13.8 kV \u2192 480 V AC",icon:"\uD83D\uDD27",color:"yellow",eff:98.5,
-   desc:"On-site transformers step down to 480V three-phase AC \u2014 the standard voltage for large industrial equipment."},
-  {name:"UPS Double Conversion",voltage:"480 V AC \u2192 480 V AC",icon:"\uD83D\uDD0B",color:"yellow",eff:96.5,
-   desc:"Uninterruptible power supplies convert AC\u2192DC\u2192AC for battery backup. The double conversion is the chain's most controversial efficiency cost."},
-  {name:"Bus Bars / PDU",voltage:"480 V AC",icon:"\u2501",color:"green",eff:99.5,
-   desc:"Copper bus bars distribute 480V AC to each power shelf in the rack with minimal resistive loss."},
-  {name:"Power Shelf AC\u2192DC",voltage:"480 V AC \u2192 ~50 V DC",icon:"\u23DA",color:"cyan",eff:97.5,
-   desc:"OCP ORv3 HPR shelves convert 480V AC to ~50V DC. Each GB200/GB300 rack has 8 shelves (4+4 N+N), each with 6x 5.5 kW PSUs."},
-  {name:"VRM Point-of-Load",voltage:"~50 V \u2192 <1 V",icon:"\uD83D\uDCBB",color:"blue",eff:90.5,
-   desc:"Voltage Regulator Modules on the compute tray perform the final step-down to sub-1V levels for the GPU/CPU silicon. The extreme ratio makes this the biggest bottleneck."}
+   desc:"High-voltage AC transmission lines carry electricity from power plants across hundreds of miles. Higher voltages minimize I\u00B2R losses. Unchanged between AC and DC architectures."},
+  {name:"Utility Substation",voltage:"765 kV \u2192 13.8 kV AC",icon:"\uD83C\uDFED",color:"orange",eff:98.5,
+   desc:"Step-down transformers reduce transmission voltage to medium-voltage distribution (13.8 kV AC) \u2014 the feed that arrives at the data center perimeter."},
+  {name:"Power Room Transformer",voltage:"13.8 kV \u2192 415 V AC",icon:"\uD83D\uDD27",color:"yellow",eff:98.5,
+   desc:"On-site transformers step medium-voltage AC down to 415 V three-phase (480 V in US deployments). This is one of the stages NVIDIA's 800 VDC architecture eliminates."},
+  {name:"UPS",voltage:"415 V AC \u2192 415 V AC",icon:"\uD83D\uDD0B",color:"yellow",eff:96.5,
+   desc:"Uninterruptible power supplies run AC\u2192DC\u2192AC to provide battery-backed, conditioned power for the data hall. Another stage eliminated in the 800 VDC path."},
+  {name:"415 V Busway Distribution",voltage:"415 V AC",icon:"\u2501",color:"green",eff:99.5,
+   desc:"415 V AC busways carry power across the data hall to each equipment row and into the rack. AC distribution at this voltage needs more copper than an equivalent DC bus."},
+  {name:"Rack PSU (AC\u2192DC)",voltage:"415 V AC \u2192 54 / 12 V DC",icon:"\u23DA",color:"cyan",eff:97.5,
+   desc:"Rack power shelves convert 415 V AC to the 54 V / 12 V DC rails the compute trays consume. On GB200/GB300 NVL72: 8 OCP ORv3 HPR shelves (4+4 N+N), 6x 5.5 kW PSUs each."},
+  {name:"VRM Point-of-Load",voltage:"12 V \u2192 <1 V",icon:"\uD83D\uDCBB",color:"blue",eff:90.5,
+   desc:"Voltage Regulator Modules on the compute tray perform the final step-down from 12 V to the sub-1 V GPU / CPU core rail. The extreme ratio makes this the biggest single bottleneck in the chain."}
 ];
 
 const dcStages=[
   {name:"Grid Transmission",voltage:"138-765 kV AC",icon:"\u26A1",color:"red",eff:99.5,
    desc:"Same high-voltage AC transmission as today \u2014 unchanged upstream of the facility."},
-  {name:"Utility Substation",voltage:"765 kV \u2192 13.8 kV",icon:"\uD83C\uDFED",color:"orange",eff:98.5,
-   desc:"Same substation step-down to medium-voltage distribution."},
+  {name:"Utility Substation",voltage:"765 kV \u2192 13.8 kV AC",icon:"\uD83C\uDFED",color:"orange",eff:98.5,
+   desc:"Same 13.8 kV medium-voltage feed delivered to the data center perimeter."},
   {name:"Central Rectifier",voltage:"13.8 kV AC \u2192 800 V DC",icon:"\u2B50",color:"yellow",eff:97.5,
-   desc:"A single high-efficiency rectifier converts medium-voltage AC to 800V DC at the facility perimeter. Eliminates the facility transformer, UPS double-conversion, and PDU stages. Batteries connect directly to the DC bus.",collapsed:"Replaces: Transformer + UPS + PDU"},
-  {name:"800V DC Bus",voltage:"800 V DC",icon:"\u2501",color:"green",eff:99.5,
-   desc:"800V DC distributes directly to racks via a two-conductor bus. No AC skin effect, no reactive power loss, 45% less copper than equivalent AC distribution."},
-  {name:"Rack DC-DC",voltage:"800 V \u2192 50 V DC",icon:"\u23DA",color:"cyan",eff:97.5,
-   desc:"DC-DC power shelves step 800V down to 50V for the compute tray bus bar. DC-to-DC conversion is inherently more efficient than AC-to-DC."},
-  {name:"VRM Point-of-Load",voltage:"50 V \u2192 <1 V",icon:"\uD83D\uDCBB",color:"blue",eff:90.5,
-   desc:"Same final VRM step-down to sub-1V as today. Still the biggest bottleneck in the chain."}
+   desc:"A single industrial-grade rectifier (or solid-state transformer) in the power room converts 13.8 kV AC straight to 800 V DC. Batteries tie directly to the DC bus \u2014 no more AC\u2192DC\u2192AC UPS round-trip.",collapsed:"Replaces: Transformer + UPS + Rack PSU AC\u2192DC"},
+  {name:"800 V Busways",voltage:"800 V DC",icon:"\u2501",color:"green",eff:99.5,
+   desc:"800 V DC is carried across the data hall on two-conductor busways with fused or solid-state overcurrent protection, then fed directly into each rack. ~45% less copper than an equivalent AC distribution."},
+  {name:"Rack DC-DC",voltage:"800 V \u2192 54 / 12 V DC",icon:"\u23DA",color:"cyan",eff:97.5,
+   desc:"In-rack DC-DC converters step 800 V down to the 54 V / 12 V rails for the compute trays. A late-stage high-ratio LLC converter handles the big step-down efficiently."},
+  {name:"VRM Point-of-Load",voltage:"12 V \u2192 <1 V",icon:"\uD83D\uDCBB",color:"blue",eff:90.5,
+   desc:"Same final VRM step-down from 12 V to the GPU / CPU core rail. Still the biggest bottleneck in the chain."}
 ];
 
 /* ── RENDER FLOW ── */

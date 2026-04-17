@@ -154,20 +154,6 @@ a{color:var(--cyan);text-decoration:none}
 .spec-item .spec-val{font-size:.85rem;font-weight:700}
 .spec-item.full{grid-column:1/-1}
 
-/* ── UNIT CONVERTER ── */
-.unit-panel{position:fixed;bottom:20px;right:20px;z-index:100;background:var(--bg2);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);padding:0;box-shadow:0 8px 32px rgba(0,0,0,.5);transition:all .3s;max-width:260px}
-.unit-panel.collapsed .unit-panel-body{display:none}
-.unit-panel-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;cursor:pointer;user-select:none;border-bottom:1px solid rgba(255,255,255,.06)}
-.unit-panel-header h4{font-size:.8rem;color:var(--cyan)}
-.unit-panel-header .toggle-icon{font-size:1rem;color:var(--text3);transition:transform .3s}
-.unit-panel.collapsed .toggle-icon{transform:rotate(180deg)}
-.unit-panel-body{padding:10px 14px 14px}
-.unit-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.unit-row:last-child{margin-bottom:0}
-.unit-row label{font-size:.75rem;color:var(--text2)}
-.unit-row select{background:var(--bg3);border:1px solid rgba(255,255,255,.1);border-radius:6px;color:var(--text);padding:3px 6px;font-size:.75rem;cursor:pointer}
-.unit-row select:focus{outline:none;border-color:var(--cyan)}
-
 /* ── FOOTER ── */
 footer{text-align:center;padding:40px 20px;border-top:1px solid rgba(255,255,255,.06);color:var(--text3);font-size:.8rem;margin-top:40px}
 footer .sources{margin-bottom:6px;color:var(--text2)}
@@ -185,7 +171,6 @@ footer .sources{margin-bottom:6px;color:var(--text2)}
   .path-meta-item{text-align:left}
   .sys-cards{grid-template-columns:1fr}
   .spec-grid{grid-template-columns:1fr}
-  .unit-panel{right:10px;bottom:10px;max-width:240px}
 }
 @media(max-width:480px){
   .stage-block{flex:1 1 100%}
@@ -290,11 +275,11 @@ footer .sources{margin-bottom:6px;color:var(--text2)}
       </div>
       <div class="spec-grid">
         <div class="spec-item"><div class="spec-label">GPUs</div><div class="spec-val">72x B200</div></div>
-        <div class="spec-item"><div class="spec-label">GPU TDP</div><div class="spec-val"><span data-value="1200" data-unit="W">1,200 W</span></div></div>
+        <div class="spec-item"><div class="spec-label">GPU TDP</div><div class="spec-val">1,200 W</div></div>
         <div class="spec-item"><div class="spec-label">CPUs</div><div class="spec-val">36x Grace</div></div>
-        <div class="spec-item"><div class="spec-label">CPU TDP</div><div class="spec-val"><span data-value="250" data-unit="W" data-prefix="~">~250 W</span></div></div>
-        <div class="spec-item"><div class="spec-label">Rack Power</div><div class="spec-val"><span data-value="120000" data-unit="W" data-prefix="~">~120 kW</span></div></div>
-        <div class="spec-item"><div class="spec-label">DC Bus</div><div class="spec-val"><span data-value="50" data-unit="V" data-prefix="~">~50 V</span> DC</div></div>
+        <div class="spec-item"><div class="spec-label">CPU TDP</div><div class="spec-val">~250 W</div></div>
+        <div class="spec-item"><div class="spec-label">Rack Power</div><div class="spec-val">~120 kW</div></div>
+        <div class="spec-item"><div class="spec-label">DC Bus</div><div class="spec-val">~50 V DC</div></div>
         <div class="spec-item full"><div class="spec-label">Power Shelves</div><div class="spec-val">8 shelves (4+4 N+N), 6x 5.5 kW PSUs each</div></div>
         <div class="spec-item full"><div class="spec-label">Cooling</div><div class="spec-val">Liquid-cooled compute, air-cooled power shelves</div></div>
       </div>
@@ -308,13 +293,13 @@ footer .sources{margin-bottom:6px;color:var(--text2)}
       </div>
       <div class="spec-grid">
         <div class="spec-item"><div class="spec-label">GPUs</div><div class="spec-val">72x B300</div></div>
-        <div class="spec-item"><div class="spec-label">GPU TDP</div><div class="spec-val"><span data-value="1400" data-unit="W">1,400 W</span></div></div>
+        <div class="spec-item"><div class="spec-label">GPU TDP</div><div class="spec-val">1,400 W</div></div>
         <div class="spec-item"><div class="spec-label">CPUs</div><div class="spec-val">36x Grace</div></div>
-        <div class="spec-item"><div class="spec-label">CPU TDP</div><div class="spec-val"><span data-value="250" data-unit="W" data-prefix="~">~250 W</span></div></div>
-        <div class="spec-item"><div class="spec-label">Rack Power</div><div class="spec-val"><span data-value="135000" data-unit="W" data-prefix="~">~135 kW</span></div></div>
+        <div class="spec-item"><div class="spec-label">CPU TDP</div><div class="spec-val">~250 W</div></div>
+        <div class="spec-item"><div class="spec-label">Rack Power</div><div class="spec-val">~135 kW</div></div>
         <div class="spec-item"><div class="spec-label">FP4 / GPU</div><div class="spec-val">15 PFLOPS</div></div>
         <div class="spec-item"><div class="spec-label">HBM3e / GPU</div><div class="spec-val">288 GB</div></div>
-        <div class="spec-item"><div class="spec-label">DC Bus</div><div class="spec-val"><span data-value="50" data-unit="V" data-prefix="~">~50 V</span> DC</div></div>
+        <div class="spec-item"><div class="spec-label">DC Bus</div><div class="spec-val">~50 V DC</div></div>
       </div>
     </article>
 
@@ -327,13 +312,13 @@ footer .sources{margin-bottom:6px;color:var(--text2)}
       <p class="coming-tag">Expected Late 2026 &ndash; 2027</p>
       <div class="spec-grid">
         <div class="spec-item"><div class="spec-label">GPUs</div><div class="spec-val">72x R200</div></div>
-        <div class="spec-item"><div class="spec-label">GPU TDP</div><div class="spec-val"><span data-value-min="1800" data-value-max="2300" data-unit="W">1,800-2,300 W</span></div></div>
-        <div class="spec-item"><div class="spec-label">Rack Power</div><div class="spec-val"><span data-value-min="180000" data-value-max="220000" data-unit="W" data-prefix="~">~180-220 kW</span></div></div>
+        <div class="spec-item"><div class="spec-label">GPU TDP</div><div class="spec-val">1,800-2,300 W</div></div>
+        <div class="spec-item"><div class="spec-label">Rack Power</div><div class="spec-val">~180-220 kW</div></div>
         <div class="spec-item"><div class="spec-label">FP4 / GPU</div><div class="spec-val">50 PFLOPS (inference)</div></div>
         <div class="spec-item"><div class="spec-label">HBM4 / GPU</div><div class="spec-val">288 GB</div></div>
         <div class="spec-item"><div class="spec-label">Bandwidth</div><div class="spec-val">22 TB/s</div></div>
         <div class="spec-item"><div class="spec-label">NVLink 6</div><div class="spec-val">3.6 TB/s / GPU</div></div>
-        <div class="spec-item"><div class="spec-label">DC Input</div><div class="spec-val"><span data-value="800" data-unit="V">800 V</span> &rarr; <span data-value="50" data-unit="V">50 V</span> DC</div></div>
+        <div class="spec-item"><div class="spec-label">DC Input</div><div class="spec-val">800 V &rarr; 50 V DC</div></div>
         <div class="spec-item full"><div class="spec-label">Efficiency Gains</div><div class="spec-val">45% less copper, up to 70% less maintenance</div></div>
       </div>
     </article>
@@ -346,18 +331,6 @@ footer .sources{margin-bottom:6px;color:var(--text2)}
   <div>Last updated: April 15, 2026</div>
 </footer>
 
-<!-- ════════ UNIT CONVERTER ════════ -->
-<div class="unit-panel" id="unitPanel">
-  <div class="unit-panel-header" onclick="toggleUnitPanel()">
-    <h4>Unit Converter</h4>
-    <span class="toggle-icon">&#9660;</span>
-  </div>
-  <div class="unit-panel-body">
-    <div class="unit-row"><label>Power</label><select id="unitPower" onchange="convertUnits()"><option value="W">W</option><option value="kW" selected>kW</option><option value="MW">MW</option></select></div>
-    <div class="unit-row"><label>Voltage</label><select id="unitVoltage" onchange="convertUnits()"><option value="V" selected>V</option><option value="kV">kV</option></select></div>
-  </div>
-</div>
-
 <script>
 /* ── STAGE DATA ── */
 const acStages=[
@@ -365,15 +338,15 @@ const acStages=[
    desc:"High-voltage AC transmission lines carry electricity from power plants across hundreds of miles. Higher voltages minimize I\u00B2R losses."},
   {name:"Utility Substation",voltage:"765 kV \u2192 13.8 kV",icon:"\uD83C\uDFED",color:"orange",eff:98.5,
    desc:"Step-down transformers reduce transmission voltage to medium-voltage distribution for delivery to the facility."},
-  {name:"Facility Transformer",voltage:"13.8 kV \u2192 480V AC",icon:"\uD83D\uDD27",color:"yellow",eff:98.5,
+  {name:"Facility Transformer",voltage:"13.8 kV \u2192 480 V AC",icon:"\uD83D\uDD27",color:"yellow",eff:98.5,
    desc:"On-site transformers step down to 480V three-phase AC \u2014 the standard voltage for large industrial equipment."},
-  {name:"UPS Double Conversion",voltage:"480V AC \u2192 480V AC",icon:"\uD83D\uDD0B",color:"yellow",eff:96.5,
+  {name:"UPS Double Conversion",voltage:"480 V AC \u2192 480 V AC",icon:"\uD83D\uDD0B",color:"yellow",eff:96.5,
    desc:"Uninterruptible power supplies convert AC\u2192DC\u2192AC for battery backup. The double conversion is the chain's most controversial efficiency cost."},
-  {name:"Bus Bars / PDU",voltage:"480V AC",icon:"\u2501",color:"green",eff:99.5,
+  {name:"Bus Bars / PDU",voltage:"480 V AC",icon:"\u2501",color:"green",eff:99.5,
    desc:"Copper bus bars distribute 480V AC to each power shelf in the rack with minimal resistive loss."},
-  {name:"Power Shelf AC\u2192DC",voltage:"480V AC \u2192 ~50V DC",icon:"\u23DA",color:"cyan",eff:97.5,
+  {name:"Power Shelf AC\u2192DC",voltage:"480 V AC \u2192 ~50 V DC",icon:"\u23DA",color:"cyan",eff:97.5,
    desc:"OCP ORv3 HPR shelves convert 480V AC to ~50V DC. Each GB200/GB300 rack has 8 shelves (4+4 N+N), each with 6x 5.5 kW PSUs."},
-  {name:"VRM Point-of-Load",voltage:"~50V \u2192 <1V",icon:"\uD83D\uDCBB",color:"blue",eff:90.5,
+  {name:"VRM Point-of-Load",voltage:"~50 V \u2192 <1 V",icon:"\uD83D\uDCBB",color:"blue",eff:90.5,
    desc:"Voltage Regulator Modules on the compute tray perform the final step-down to sub-1V levels for the GPU/CPU silicon. The extreme ratio makes this the biggest bottleneck."}
 ];
 
@@ -382,13 +355,13 @@ const dcStages=[
    desc:"Same high-voltage AC transmission as today \u2014 unchanged upstream of the facility."},
   {name:"Utility Substation",voltage:"765 kV \u2192 13.8 kV",icon:"\uD83C\uDFED",color:"orange",eff:98.5,
    desc:"Same substation step-down to medium-voltage distribution."},
-  {name:"Central Rectifier",voltage:"13.8 kV AC \u2192 800V DC",icon:"\u2B50",color:"yellow",eff:97.5,
+  {name:"Central Rectifier",voltage:"13.8 kV AC \u2192 800 V DC",icon:"\u2B50",color:"yellow",eff:97.5,
    desc:"A single high-efficiency rectifier converts medium-voltage AC to 800V DC at the facility perimeter. Eliminates the facility transformer, UPS double-conversion, and PDU stages. Batteries connect directly to the DC bus.",collapsed:"Replaces: Transformer + UPS + PDU"},
-  {name:"800V DC Bus",voltage:"800V DC",icon:"\u2501",color:"green",eff:99.5,
+  {name:"800V DC Bus",voltage:"800 V DC",icon:"\u2501",color:"green",eff:99.5,
    desc:"800V DC distributes directly to racks via a two-conductor bus. No AC skin effect, no reactive power loss, 45% less copper than equivalent AC distribution."},
-  {name:"Rack DC-DC",voltage:"800V \u2192 50V DC",icon:"\u23DA",color:"cyan",eff:97.5,
+  {name:"Rack DC-DC",voltage:"800 V \u2192 50 V DC",icon:"\u23DA",color:"cyan",eff:97.5,
    desc:"DC-DC power shelves step 800V down to 50V for the compute tray bus bar. DC-to-DC conversion is inherently more efficient than AC-to-DC."},
-  {name:"VRM Point-of-Load",voltage:"50V \u2192 <1V",icon:"\uD83D\uDCBB",color:"blue",eff:90.5,
+  {name:"VRM Point-of-Load",voltage:"50 V \u2192 <1 V",icon:"\uD83D\uDCBB",color:"blue",eff:90.5,
    desc:"Same final VRM step-down to sub-1V as today. Still the biggest bottleneck in the chain."}
 ];
 
@@ -444,42 +417,6 @@ function initObservers(){
   document.querySelectorAll('.reveal').forEach(el=>revealObs.observe(el));
 }
 
-/* ── UNIT CONVERTER ── */
-function toggleUnitPanel(){
-  document.getElementById('unitPanel').classList.toggle('collapsed');
-}
-function formatVal(v){
-  if(v>=1000)return v.toLocaleString('en-US',{maximumFractionDigits:1});
-  if(v<0.01)return v.toFixed(4);
-  if(v<1)return v.toFixed(2);
-  return v.toLocaleString('en-US',{maximumFractionDigits:1});
-}
-function convertUnits(){
-  const pu=document.getElementById('unitPower').value;
-  const vu=document.getElementById('unitVoltage').value;
-  document.querySelectorAll('[data-unit]').forEach(el=>{
-    const unit=el.dataset.unit;
-    const prefix=el.dataset.prefix||'';
-    let factor=1,suffix=unit;
-    if(unit==='W'){
-      if(pu==='kW'){factor=1/1000;suffix='kW'}
-      else if(pu==='MW'){factor=1/1e6;suffix='MW'}
-      else{suffix='W'}
-    }else if(unit==='V'){
-      if(vu==='kV'){factor=1/1000;suffix='kV'}
-      else{suffix='V'}
-    }
-    if(el.dataset.valueMin!==undefined&&el.dataset.valueMax!==undefined){
-      const lo=parseFloat(el.dataset.valueMin)*factor;
-      const hi=parseFloat(el.dataset.valueMax)*factor;
-      el.textContent=prefix+formatVal(lo)+'-'+formatVal(hi)+' '+suffix;
-    }else if(el.dataset.value!==undefined){
-      const v=parseFloat(el.dataset.value)*factor;
-      el.textContent=prefix+formatVal(v)+' '+suffix;
-    }
-  });
-}
-
 /* ── HERO CANVAS ── */
 function initHeroCanvas(){
   const canvas=document.getElementById('heroCanvas');
@@ -517,7 +454,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   renderFlow('dcFlow',dcStages);
   initObservers();
   initHeroCanvas();
-  convertUnits();
 });
 </script>
 </body>

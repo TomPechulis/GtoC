@@ -107,7 +107,7 @@ a{color:var(--cyan);text-decoration:none}
 .stage-block .sb-more .sb-caret{transition:transform .3s}
 .stage-block.open .sb-more .sb-caret{transform:rotate(180deg)}
 .stage-block .sb-detail{font-size:.75rem;color:var(--text2);line-height:1.5;max-height:0;overflow:hidden;transition:max-height .4s ease,margin-top .4s}
-.stage-block.open .sb-detail{max-height:300px;margin-top:8px}
+.stage-block.open .sb-detail{max-height:420px;margin-top:8px}
 
 /* highlight dropped stages on DC path */
 .dropped-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.2);color:var(--green);font-size:.68rem;font-weight:700;padding:4px 10px;border-radius:20px;margin-top:10px;letter-spacing:.04em}
@@ -128,6 +128,7 @@ a{color:var(--cyan);text-decoration:none}
 .eff-strip .es-arrow{font-size:1.5rem;color:var(--green);display:flex;flex-direction:column;align-items:center;gap:2px}
 .eff-strip .es-arrow .es-delta{font-size:.72rem;color:var(--green);font-weight:700;white-space:nowrap}
 .eff-strip .es-sub{font-size:.72rem;color:var(--text3);margin-top:4px}
+.eff-note{text-align:center;color:var(--text3);font-size:.75rem;max-width:760px;margin:12px auto 0;line-height:1.5}
 @media(max-width:900px){.eff-strip{grid-template-columns:1fr}.eff-strip .es-arrow{transform:rotate(90deg);padding:4px 0}}
 
 /* ── RACKS ── */
@@ -199,7 +200,7 @@ footer .sources{margin-bottom:6px;color:var(--text2)}
 <section class="transition-section">
   <div class="section-intro reveal">
     <h2>From 415 V AC to 800 V DC &mdash; and toward 1500 V DC</h2>
-    <p>Every watt a chip consumes starts as high-voltage AC at a power plant hundreds of miles away. Traditional 415 V AC distribution runs through seven conversions before the chip sees 12 V. NVIDIA's emerging 800 V DC architecture (targeted for 1 MW racks from 2027) collapses the transformer, UPS, and rack AC&rarr;DC into a single medium-voltage rectifier. Industry partners like Flex are already sketching a further jump to 1500 V DC &mdash; the upper limit of the &ldquo;low-voltage&rdquo; class under NEC Article 690 and IEC 62477-1, already common in utility-scale solar and rail &mdash; to feed the multi-megawatt racks that come after.</p>
+    <p>Every watt a chip consumes starts as high-voltage AC at a power plant hundreds of miles away. In a traditional 415&nbsp;V AC hall, that feed is stepped down, conditioned by a double-conversion UPS, and rectified in the rack to a 54&nbsp;V or 12&nbsp;V bus. A point-of-load regulator then makes the sub-1&nbsp;V core rail the chip actually uses. The diagram counts that path as seven stages, including transmission and the hall busway, which are not conversions. NVIDIA's 800&nbsp;V DC architecture, targeted at 1&nbsp;MW racks from 2027, collapses the low-voltage transformer, the AC UPS, and the rack AC&rarr;DC stage into one medium-voltage rectifier. 1500&nbsp;V DC sits at the usual top of the low-voltage class (IEC&nbsp;62477-1 stops at 1500&nbsp;V DC; the NEC treats anything above 1500&nbsp;V DC as high voltage) and is already common in utility-scale solar and rail. NVIDIA's white paper lists it as a potential later target, and OCP's LVDC work discusses it as a progression. It is not required to reach multi-megawatt racks &mdash; NVIDIA's 800&nbsp;V DC design is meant to scale past 1&nbsp;MW.</p>
   </div>
 
   <!-- Today (AC) -->
@@ -217,7 +218,7 @@ footer .sources{margin-bottom:6px;color:var(--text2)}
         </div>
         <div class="path-meta-item">
           <div class="pm-label">End-to-end</div>
-          <div class="pm-val">~83%</div>
+          <div class="pm-val" id="acE2E">~81.8%</div>
         </div>
       </div>
     </div>
@@ -231,7 +232,7 @@ footer .sources{margin-bottom:6px;color:var(--text2)}
     <div class="path-header">
       <div class="path-title">
         <span class="path-era">Emerging &mdash; 800 V DC</span>
-        <h3>Single-conversion DC distribution</h3>
+        <h3>Facility-level DC distribution</h3>
         <span class="path-rack-tag">Next-generation high-density racks</span>
       </div>
       <div class="path-meta">
@@ -241,22 +242,22 @@ footer .sources{margin-bottom:6px;color:var(--text2)}
         </div>
         <div class="path-meta-item">
           <div class="pm-label">End-to-end</div>
-          <div class="pm-val">~87%</div>
+          <div class="pm-val" id="dcE2E">~84.8%</div>
         </div>
       </div>
     </div>
     <div class="stage-flow" id="dcFlow"></div>
   </div>
 
-  <div class="transition-divider"><span class="td-arrow">&darr;</span><span>Beyond 1 MW racks</span><span class="td-arrow">&darr;</span></div>
+  <div class="transition-divider"><span class="td-arrow">&darr;</span><span>Longer-term option</span><span class="td-arrow">&darr;</span></div>
 
   <!-- Future (1500 V DC) -->
   <div class="path hv-path reveal">
     <div class="path-header">
       <div class="path-title">
         <span class="path-era">Exploratory &mdash; 1500 V DC</span>
-        <h3>Ultra-high-voltage DC for multi-MW racks</h3>
-        <span class="path-rack-tag">Under evaluation at Flex, OCP working groups</span>
+        <h3>1500 V DC, still in the low-voltage class</h3>
+        <span class="path-rack-tag">Potential later target in NVIDIA's white paper and OCP LVDC</span>
       </div>
       <div class="path-meta">
         <div class="path-meta-item">
@@ -265,7 +266,7 @@ footer .sources{margin-bottom:6px;color:var(--text2)}
         </div>
         <div class="path-meta-item">
           <div class="pm-label">End-to-end</div>
-          <div class="pm-val">~88%</div>
+          <div class="pm-val" id="hvE2E">~83.9%</div>
         </div>
       </div>
     </div>
@@ -276,34 +277,35 @@ footer .sources{margin-bottom:6px;color:var(--text2)}
   <div class="eff-strip reveal">
     <div class="es-box ac">
       <div class="es-label">Traditional (415 V AC)</div>
-      <div class="es-val">~83%</div>
+      <div class="es-val" id="acE2EStrip">~81.8%</div>
       <div class="es-sub">7 stages &middot; up to ~200 kW per rack</div>
     </div>
     <div class="es-arrow">
       <span>&rarr;</span>
-      <span class="es-delta">+4 pts &middot; -45% Cu</span>
+      <span class="es-delta" id="dcDelta">+3.0 pts &middot; &minus;45% Cu</span>
     </div>
     <div class="es-box dc">
       <div class="es-label">Emerging (800 V DC)</div>
-      <div class="es-val">~87%</div>
+      <div class="es-val" id="dcE2EStrip">~84.8%</div>
       <div class="es-sub">6 stages &middot; 1 MW racks from 2027</div>
     </div>
     <div class="es-arrow">
       <span>&rarr;</span>
-      <span class="es-delta">+1 pt &middot; -50% more Cu</span>
+      <span class="es-delta" id="hvDelta">&minus;0.9 pts &middot; &minus;45% Cu</span>
     </div>
     <div class="es-box hv">
       <div class="es-label">Future (1500 V DC)</div>
-      <div class="es-val">~88%</div>
+      <div class="es-val" id="hvE2EStrip">~83.9%</div>
       <div class="es-sub">6 stages &middot; multi-MW racks, exploratory</div>
     </div>
   </div>
+  <p class="eff-note">End-to-end percentages are the product of the stage efficiencies in that path. The 1500&nbsp;V stage efficiencies are illustrative; NVIDIA and OCP have not published a measured chain efficiency for that path. The copper figures are separate: NVIDIA reports about 45% less copper from 415&nbsp;V AC to 800&nbsp;V DC, and its cable comparison shows about 45% less copper for 1500&nbsp;V DC than for 800&nbsp;V DC at the same power (3.1 versus 1.7&nbsp;kW/mm&sup2;).</p>
 </section>
 
 <!-- ════════ FOOTER ════════ -->
 <footer>
   <div class="sources">Data sourced from NVIDIA, OCP, IEEE Spectrum, Flex, Schneider Electric</div>
-  <div>Last updated: April 22, 2026</div>
+  <div>Last updated: October 6, 2026</div>
 </footer>
 
 <script>
@@ -330,8 +332,8 @@ const dcStages=[
    desc:"Same high-voltage AC transmission as today \u2014 unchanged upstream of the facility."},
   {name:"Utility Substation",voltage:"765 kV \u2192 13.8 kV AC",icon:"\uD83C\uDFED",color:"orange",eff:98.5,
    desc:"Same 13.8 kV medium-voltage feed delivered to the data center perimeter."},
-  {name:"Central Rectifier",voltage:"13.8 kV AC \u2192 800 V DC",icon:"\u2B50",color:"yellow",eff:97.5,
-   desc:"A single industrial-grade rectifier (or solid-state transformer) in the power room converts 13.8 kV AC straight to 800 V DC. Batteries tie directly to the DC bus \u2014 no more AC\u2192DC\u2192AC UPS round-trip.",collapsed:"Replaces: Transformer + UPS + Rack PSU AC\u2192DC"},
+  {name:"Central Rectifier",voltage:"13.8 kV AC \u2192 800 V DC",icon:"\u2B50",color:"yellow",eff:98.5,
+   desc:"A single industrial-grade rectifier or solid-state transformer in the power room converts 13.8 kV AC straight to 800 V DC. NVIDIA cites about 98.5% or better for megawatt-scale MV rectifiers and SSTs. Ride-through storage connects on the DC side, through a converter, instead of an AC\u2192DC\u2192AC UPS round-trip.",collapsed:"Replaces: Transformer + UPS + Rack PSU AC\u2192DC"},
   {name:"800 V Busways",voltage:"800 V DC",icon:"\u2501",color:"green",eff:99.5,
    desc:"800 V DC is carried across the data hall on two-conductor busways with fused or solid-state overcurrent protection, then fed directly into each rack. ~45% less copper than an equivalent AC distribution."},
   {name:"Rack DC-DC",voltage:"800 V \u2192 54 / 12 V DC",icon:"\u23DA",color:"cyan",eff:97.5,
@@ -346,11 +348,11 @@ const hv1500Stages=[
   {name:"Utility Substation",voltage:"765 kV → 13.8 kV AC",icon:"🏭",color:"orange",eff:98.5,
    desc:"Same 13.8 kV medium-voltage feed delivered to the data center perimeter."},
   {name:"Solid-State Transformer",voltage:"13.8 kV AC → 1500 V DC",icon:"✨",color:"magenta",eff:97.8,
-   desc:"A solid-state transformer (SST) in the power room steps straight from medium-voltage AC to 1500 V DC. 1500 V is the upper limit of the “low-voltage” class under NEC Article 690 and IEC 62477-1 — already common in utility-scale solar and rail, and now being floated by Flex and OCP working groups for IT-rack use.",collapsed:"Replaces: Transformer + UPS + Rack PSU AC→DC"},
+   desc:"A solid-state transformer could step from medium-voltage AC to 1500 V DC. That voltage is the usual top of the low-voltage class: IEC 62477-1 stops at 1500 V DC, and NEC Article 100 treats anything above 1500 V DC as high voltage. It is already common in utility-scale solar and rail. NVIDIA lists 1500 V DC as a potential long-term target, and the OCP LVDC white paper discusses 1500 V or \u00B1750 V distribution paired with 800 V at the rack. The efficiency shown here is illustrative, not a published measurement.",collapsed:"Replaces: Transformer + UPS + Rack PSU AC→DC"},
   {name:"1500 V Busways",voltage:"1500 V DC",icon:"━",color:"green",eff:99.7,
-   desc:"At 1500 V the same power moves at roughly half the current of an 800 V bus — another ~50% cut in busway copper on top of the 45% saved going from AC to 800 V DC. Required for multi-megawatt racks where 800 V busbars start to get impractical. Arc-flash and isolation standards for indoor IT are still being developed under UL and NEC."},
+   desc:"At 1500 V the same power moves at 800/1500 of the current of an 800 V bus, about half. NVIDIA's cable comparison shows 1500 V DC delivering 3.1 kW/mm\u00B2 versus 1.7 kW/mm\u00B2 at 800 V DC, about 45% less copper for the same power. 800 V DC is still the architecture NVIDIA says scales past 1 MW. Arc-flash and isolation rules for indoor IT at this voltage are still evolving under UL and the NEC. The efficiency shown here is illustrative."},
   {name:"Rack DC-DC",voltage:"1500 V → 54 / 12 V DC",icon:"⏚",color:"cyan",eff:97.0,
-   desc:"A wide-ratio resonant converter (often staged through an intermediate bus) steps 1500 V down to the 54 V / 12 V rails. GaN and SiC switches make the large step-down feasible in rack form factors, but certified components at this voltage class are still scarce."},
+   desc:"A wide-ratio resonant converter (often staged through an intermediate bus) would step 1500 V down to the 54 V / 12 V rails. Certified components at this voltage class are still scarce, and the efficiency shown here is illustrative."},
   {name:"VRM Point-of-Load",voltage:"12 V → <1 V",icon:"💻",color:"blue",eff:90.5,
    desc:"Same final VRM step-down from 12 V to the GPU / CPU core rail. Unchanged across all three architectures — still the biggest single bottleneck."}
 ];
@@ -438,11 +440,35 @@ function initHeroCanvas(){
   draw();
 }
 
+/* ── END-TO-END = PRODUCT OF STAGE EFFICIENCIES ── */
+function chainPct(stages){
+  return stages.reduce((p,s)=>p*(s.eff/100),1)*100;
+}
+function fmtPct(n){return '~'+n.toFixed(1)+'%'}
+function fmtPts(delta){
+  const sign=delta>=0?'+':'\u2212';
+  return sign+Math.abs(delta).toFixed(1)+' pts';
+}
+function publishChainEff(){
+  const ac=chainPct(acStages);
+  const dc=chainPct(dcStages);
+  const hv=chainPct(hv1500Stages);
+  document.getElementById('acE2E').textContent=fmtPct(ac);
+  document.getElementById('dcE2E').textContent=fmtPct(dc);
+  document.getElementById('hvE2E').textContent=fmtPct(hv);
+  document.getElementById('acE2EStrip').textContent=fmtPct(ac);
+  document.getElementById('dcE2EStrip').textContent=fmtPct(dc);
+  document.getElementById('hvE2EStrip').textContent=fmtPct(hv);
+  document.getElementById('dcDelta').textContent=fmtPts(dc-ac)+' \u00B7 \u221245% Cu';
+  document.getElementById('hvDelta').textContent=fmtPts(hv-dc)+' \u00B7 \u221245% Cu';
+}
+
 /* ── INIT ── */
 document.addEventListener('DOMContentLoaded',()=>{
   renderFlow('acFlow',acStages);
   renderFlow('dcFlow',dcStages);
   renderFlow('hvFlow',hv1500Stages);
+  publishChainEff();
   initObservers();
   initHeroCanvas();
 });
